@@ -65,7 +65,8 @@ ANON_FIELDS.each do |key|
 
     runsql(db,
            File.join(CREATE_ANONYMIZED_DIR, "#{key.to_s}.sql"),
-           "\tCreate anonymous value table:")
+           "Create anonymous value table:",
+           1)
 
     puts "\tInsert anonymous source data:"
     filename = File.join(INSERT_ANONYMOUS_DIR, "#{INSERT_ANONYMOUS_CMD}.#{key}")
@@ -76,30 +77,36 @@ ANON_FIELDS.each do |key|
 
     runsql(db,
            File.join(CREATE_CONVERSION_DIR, "#{key.to_s}.sql"),
-           "\tCreate conversion table:")
+           "Create conversion table:",
+           1)
 
     runsql(db,
            File.join(LOAD_DONORS_INTO_CONVERSION_DIR, "#{key.to_s}.sql"),
-           "\tLoad donor values into conversion table:")
+           "Load donor values into conversion table:",
+           1)
 
     runsql(db,
            File.join(LOAD_ANONYMOUS_INTO_CONVERSION_DIR, "#{key.to_s}.sql"),
-           "\tLoad anonymous values into conversion table:")
+           "Load anonymous values into conversion table:",
+           1)
 
     runsql(db,
            File.join(ADD_COLUMN_DIR, "#{key.to_s}.sql"),
-           "\tAdd anonymous column to donors table")
+           "Add anonymous column to donors table",
+           1)
 
     runsql(db,
            File.join(POPULATE_ANONYMIZED_COLUMN, "#{key.to_s}.sql"),
-           "\tPopulate anonymized column:")
+           "Populate anonymized column:",
+           1)
 end
 
 puts "Replace original columns:"
 REPLACE_COLUMNS_FILES.each do |file|
-    log_entry = "\t" + file.gsub(/_/, ' ').gsub('.sql', '').capitalize + ":"
+    log_entry = file.gsub(/_/, ' ').gsub('.sql', '').capitalize + ":"
     runsql(db,
            File.join(REPLACE_COLUMNS_DIR, file),
-           log_entry)
+           log_entry,
+           1)
 end
 
