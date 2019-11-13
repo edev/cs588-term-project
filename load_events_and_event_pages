@@ -2,7 +2,7 @@
 
 ##
 # This script loads the events and event pages from the SQLite3 database into CouchDB. It expects the name of the
-# anonymized database file as a command-line argument. Any messages or errors are printed to stdout.
+# anonymized database file as a command-line argument. Any messages or errors are printed to stdout/stderr.
 #
 # Invocation:
 #

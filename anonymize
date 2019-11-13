@@ -3,7 +3,7 @@
 ##
 # This script anonymizes a Bounty Sqlite3 interface. It expects the name of the database file as a command-line
 # argument, and it creates (or overwrites) a file named anonymized.sqlite3 with the result. Any messages or errors
-# are printed to stdout.
+# are printed to stdout/stderr.
 #
 # Invocation:
 #
