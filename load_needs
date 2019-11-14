@@ -9,6 +9,7 @@
 #   ./load_events_and_event_pages mydb.sqlite3
 
 require 'sqlite3'
+require_relative 'lib/couchdb'
 require_relative 'lib/runsql'
 
 SELECT_NEEDS = File.join %w(lib load_needs select_needs.sql)
@@ -115,7 +116,7 @@ sql_needs.each do |sql_need|
     gathered = total_sign_ups + untracked_donations
 
     # Now build the final document.
-    docs.append({
+    doc = {
         _id: "needs/#{slug}/#{year}",
         title: name,
         description: description,
@@ -124,7 +125,9 @@ sql_needs.each do |sql_need|
         gathered: gathered,
         adjustments: adjustments,
         sign_ups: sign_ups
-    })
+    }
+    print "Posting #{doc[:_id]}: "
+    CouchDB::post_document(doc)
 end
 
 puts docs

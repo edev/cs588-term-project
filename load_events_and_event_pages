@@ -9,6 +9,7 @@
 #   ./load_events_and_event_pages mydb.sqlite3
 
 require 'sqlite3'
+require_relative 'lib/couchdb'
 
 # IDs
 # Note: determining these with slightly more advanced SQL would give me no advantage,
@@ -75,7 +76,6 @@ end
 
 db = SQLite3::Database.new ARGV[0]
 
-docs = []
 sql_events = db.execute("SELECT * FROM events WHERE name LIKE '%201%'")
 sql_events.each do |event|
     # event is an array with the following items at the given indexes:
@@ -85,26 +85,39 @@ sql_events.each do |event|
     # 3. created_at
     # 4. updated_at
 
-    # Pull year from event ID.
-    year = YEARS[event[0]]
+    sql_id, name, description, created_at, updated_at = event
 
-    # Construct the event document and add it to the array.
-    docs.append({
-        _id: "christmas/#{year}",
-        dates: DATES[year]
-        # No landing pages are active in the pulled databases, so none of these events will have a landing_page field.
-    })
+    # Pull year from event ID.
+    year = YEARS[sql_id]
+
+    # Only do this once per pair of SQL event records.
+    if name =~ /volunteer/i
+        # Create the event document.
+        doc = {
+            _id: "christmas/#{year}",
+            dates: DATES[year]
+            # No landing pages are active in the pulled databases, so none of these events will have a landing_page field.
+        }
+        print "Posting #{doc[:_id]}: "
+        CouchDB::post_document(doc)
+    end
 
     # Construct two page documents and add them to the array.
-    ['donate', 'volunteer'].each do |page_type|
-        docs.append({
-            _id: "christmas/#{year}/#{page_type}",
-            uri: "christmas/#{year}/#{page_type}",
-            title: event[1],
-            content: event[2]
-        })
-    end
+    page_type = 
+        if name =~ /volunteer/i
+            'volunteer'
+        else
+            'donate'
+        end
+
+    doc = {
+        _id: "christmas/#{year}/#{page_type}",
+        uri: "christmas/#{year}/#{page_type}",
+        title: name,
+        content: description
+    }
+    print "Posting #{doc[:_id]}: "
+    CouchDB::post_document(doc)
 end
-puts docs
 
 
