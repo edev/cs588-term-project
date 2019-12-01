@@ -52,9 +52,9 @@
                                https://www.ecma-international.org
                                       /ecma-262/5.1/#sec-15.9.1.15
                             */
-                               
                             var timestamp = sign_up.created_at.replace(" ", "T");
                             var date = new Date(timestamp);
+
                             emit(
                                 [
                                     date.getFullYear(),
